@@ -1,5 +1,5 @@
 # Python log processor
-FROM python:3.9
+FROM python:3.8
 WORKDIR /app
 COPY requirements.txt .
 # First install C dependencies needed for thriftpy2
