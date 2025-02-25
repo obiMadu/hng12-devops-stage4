@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VUE_APP_AUTH_API_ADDRESS: ${AUTH_API_ADDRESS}
+        VUE_APP_TODOS_API_ADDRESS: ${TODOS_API_ADDRESS}
+    ports:
+      - "${PORT}:80"
+    depends_on:
+      - auth-api
+      - todos-api
+
+  auth-api:
+    build:
+      context: ./auth-api
+    ports:
+      - "${AUTH_API_PORT}:${AUTH_API_PORT}"
+    environment:
+      - AUTH_API_PORT=${AUTH_API_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - USERS_API_ADDRESS=${USERS_API_ADDRESS}
+    depends_on:
+      - users-api
+
+  todos-api:
+    build:
+      context: ./todos-api
+    ports:
+      - "${TODOS_API_PORT}:${TODOS_API_PORT}"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_CHANNEL=${REDIS_CHANNEL}
+    depends_on:
+      - redis-queue
+
+  users-api:
+    build:
+      context: ./users-api
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      - SERVER_PORT=${SERVER_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+
+  log-processor:
+    build:
+      context: ./log-message-processor
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_CHANNEL=${REDIS_CHANNEL}
+    depends_on:
+      - redis-queue
+
+  redis-queue:
+    image: redis:7
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
