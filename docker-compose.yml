@@ -5,10 +5,10 @@ services:
     build:
       context: ./frontend
       args:
-        VUE_APP_AUTH_API_ADDRESS: ${AUTH_API_ADDRESS}
-        VUE_APP_TODOS_API_ADDRESS: ${TODOS_API_ADDRESS}
+        AUTH_API_ADDRESS: http://auth-api:8081
+        TODOS_API_ADDRESS: http://todos-api:8082
     ports:
-      - "${PORT}:80"
+      - "8080:80"
     depends_on:
       - auth-api
       - todos-api
@@ -17,11 +17,7 @@ services:
     build:
       context: ./auth-api
     ports:
-      - "${AUTH_API_PORT}:${AUTH_API_PORT}"
-    environment:
-      - AUTH_API_PORT=${AUTH_API_PORT}
-      - JWT_SECRET=${JWT_SECRET}
-      - USERS_API_ADDRESS=${USERS_API_ADDRESS}
+      - "8081:8081"
     depends_on:
       - users-api
 
@@ -29,12 +25,7 @@ services:
     build:
       context: ./todos-api
     ports:
-      - "${TODOS_API_PORT}:${TODOS_API_PORT}"
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_CHANNEL=${REDIS_CHANNEL}
+      - "8082:8082"
     depends_on:
       - redis-queue
 
@@ -42,25 +33,18 @@ services:
     build:
       context: ./users-api
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
-    environment:
-      - SERVER_PORT=${SERVER_PORT}
-      - JWT_SECRET=${JWT_SECRET}
+      - "8083:8083"
 
   log-processor:
     build:
       context: ./log-message-processor
-    environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_CHANNEL=${REDIS_CHANNEL}
     depends_on:
       - redis-queue
 
   redis-queue:
     image: redis:7
     ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "6379:6379"
     volumes:
       - redis_data:/data
 
