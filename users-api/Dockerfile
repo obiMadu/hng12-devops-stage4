@@ -8,7 +8,5 @@ RUN mvn package -DskipTests
 FROM openjdk:11-jre-slim
 WORKDIR /app
 COPY --from=builder /app/target/*.jar ./users-api.jar
-ENV SERVER_PORT=8083 \
-    JWT_SECRET=myfancysecret
 EXPOSE 8083
 CMD ["java", "-jar", "users-api.jar"]
