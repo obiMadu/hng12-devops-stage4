@@ -15,7 +15,7 @@ services:
     depends_on:
       - auth-api
       - todos-api
-    command: npm run serve
+    command: npm run dev
 
   auth-api:
     build:
