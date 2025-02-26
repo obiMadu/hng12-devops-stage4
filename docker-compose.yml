@@ -4,14 +4,18 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VUE_APP_AUTH_API_ADDRESS: ${AUTH_API_ADDRESS}
-        VUE_APP_TODOS_API_ADDRESS: ${TODOS_API_ADDRESS}
+    environment:
+      - AUTH_API_ADDRESS=http://auth-api:8081
+      - TODOS_API_ADDRESS=http://todos-api:8082
     ports:
-      - "${PORT}:80"
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - auth-api
       - todos-api
+    command: npm run serve
 
   auth-api:
     build:
