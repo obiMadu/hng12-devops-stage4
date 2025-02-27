@@ -49,13 +49,16 @@ services:
     command: npm run dev
     labels:
       - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=8080"
       - "traefik.http.routers.frontend-http.entrypoints=web"
       - "traefik.http.routers.frontend-http.rule=Host(`prestastack.com`)"
+      - "traefik.http.routers.frontend-http.service=frontend"
       # tls
       - "traefik.http.routers.frontend-https.tls=true"
       - "traefik.http.routers.frontend-https.tls.certresolver=myresolver"
       - "traefik.http.routers.frontend-https.entrypoints=websecure"
       - "traefik.http.routers.frontend-https.rule=Host(`prestastack.com`)"
+      - "traefik.http.routers.frontend-https.service=frontend"
       # tls redirect
       - "traefik.http.routers.frontend-http.middlewares=redirect-https"
       - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
